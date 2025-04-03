@@ -13,14 +13,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { useState } from "react"
+import { useStore } from "@/store"
+import { useNavigate } from "react-router-dom"
 
 export default function Home() {
-  const [chatInput, setChatInput] = useState("")
-  const [chats, setChats] = useState([
-    { id: 1, title: "Environmental Usage" },
-  ]) // Initial chat list
-  const [messages, setMessages] = useState([]) // Chat messages
+  const { chats, messages, setMessages, addChat, clearMessages } = useStore()
+  const navigate = useNavigate()
 
   const handleChatSubmit = (e) => {
     e.preventDefault()
@@ -41,22 +39,21 @@ export default function Home() {
   }
 
   const handleNewChat = () => {
-    // Create a new chat and reset messages
-    const newChat = { id: chats.length + 1, title: `Chat ${chats.length + 1}` }
-    setChats((prevChats) => [...prevChats, newChat])
-    setMessages([]) // Clear messages for the new chat
+    addChat(`Chat ${chats.length + 1}`)
+    clearMessages()
   }
 
   return (
     <SidebarProvider>
-      <AppSidebar chats={chats} />
+      <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">
+                <BreadcrumbLink onClick={() => navigate("/chats")}>
                   Chats
                 </BreadcrumbLink>
               </BreadcrumbItem>

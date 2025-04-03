@@ -33,9 +33,12 @@ export function AppSidebar({ ...props }) {
   const navMainItems = [
     {
       title: "Chats",
-      url: "/chats",
       icon: SquareTerminal,
-      isActive: true,
+      items: visibleChats.map((chat) => ({
+        title: chat.title,
+        url: `#chat-${chat.id}`, // Placeholder URL for now
+        icon: SquareTerminal,
+      })),
     },
     {
       title: "Tutorial",
@@ -62,16 +65,6 @@ export function AppSidebar({ ...props }) {
     },
   ]
 
-  // Combine static items with dynamic chats
-  const dynamicNavItems = [
-    ...navMainItems,
-    ...visibleChats.map((chat) => ({
-      title: chat.title,
-      url: `#chat-${chat.id}`, // Placeholder URL for now
-      icon: SquareTerminal,
-    })),
-  ]
-
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -93,7 +86,7 @@ export function AppSidebar({ ...props }) {
       </SidebarHeader>
       <SidebarContent>
         {/* Pass dynamicNavItems to NavMain */}
-        <NavMain items={dynamicNavItems} />
+        <NavMain items={navMainItems} />
         {chats.length > 5 && (
           <button
             onClick={() => setShowAllChats(!showAllChats)}

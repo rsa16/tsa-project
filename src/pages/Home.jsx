@@ -15,9 +15,11 @@ import {
 } from "@/components/ui/sidebar"
 import { useStore } from "@/store"
 import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 export default function Home() {
   const { chats, messages, setMessages, addChat, clearMessages } = useStore()
+  const [chatInput, setChatInput] = useState("") // Local state for chat input
   const navigate = useNavigate()
 
   const handleChatSubmit = (e) => {

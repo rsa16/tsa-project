@@ -16,22 +16,24 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarInput,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useStore } from "@/store"
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
+export function AppSidebar({ ...props }) {
+  const { chats } = useStore()
+  const [showAllChats, setShowAllChats] = React.useState(false)
+
+  // Limit the number of chats shown in the sidebar
+  const visibleChats = showAllChats ? chats : chats.slice(0, 5)
+
+  // Static navigation items
+  const navMainItems = [
     {
       title: "Chats",
-      url: "#",
+      url: "/chats",
       icon: SquareTerminal,
       isActive: true,
     },
@@ -45,8 +47,9 @@ const data = {
       url: "#",
       icon: Settings2,
     },
-  ],
-  navSecondary: [
+  ]
+
+  const navSecondaryItems = [
     {
       title: "Support",
       url: "#",
@@ -57,19 +60,17 @@ const data = {
       url: "#",
       icon: Send,
     },
-  ],
-}
+  ]
 
-export function AppSidebar({
-  ...props
-}) {
-  const [chatInput, setChatInput] = React.useState("");
-
-  const handleChatSubmit = (e) => {
-    e.preventDefault();
-    console.log("Chat submitted:", chatInput);
-    setChatInput(""); // Clear input after submission
-  };
+  // Combine static items with dynamic chats
+  const dynamicNavItems = [
+    ...navMainItems,
+    ...visibleChats.map((chat) => ({
+      title: chat.title,
+      url: `#chat-${chat.id}`, // Placeholder URL for now
+      icon: SquareTerminal,
+    })),
+  ]
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -78,8 +79,7 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div
-                  className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -92,12 +92,21 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* Pass dynamicNavItems to NavMain */}
+        <NavMain items={dynamicNavItems} />
+        {chats.length > 5 && (
+          <button
+            onClick={() => setShowAllChats(!showAllChats)}
+            className="mt-2 text-primary"
+          >
+            {showAllChats ? "Show Less" : "Show More"}
+          </button>
+        )}
+        <NavSecondary items={navSecondaryItems} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={{ name: "shadcn", email: "m@example.com", avatar: "/avatars/shadcn.jpg" }} />
       </SidebarFooter>
     </Sidebar>
-  );
+  )
 }

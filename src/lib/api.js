@@ -1,30 +1,35 @@
-import axios from 'axios'
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: "/",
   headers: {
-    'Content-Type': 'application/json'
-  }
-})
+    "Content-Type": "application/json",
+  },
+});
 
 export const chatAPI = {
-  async sendMessage(chatId, message) {
-    const response = await api.post(`/chats/${chatId}/messages`, { message })
-    return response.data
+  async sendMessage(chatId, message, userId) {
+    const response = await api.post(`/chats/${chatId}`, {
+      user_id: userId,
+      message: message,
+    });
+    return response.data;
   },
 
-  async createChat(title) {
-    const response = await api.post('/chats', { title })
-    return response.data
+  async createChat(title, userId) {
+    const response = await api.post("/chats", {
+      title: title,
+      user_id: userId,
+    });
+    return response.data;
   },
 
-  async getChat(chatId) {
-    const response = await api.get(`/chats/${chatId}`)
-    return response.data
-  },
+  async getChats(userId) {
+    const response = await api.get(`/chats/${userId}`);
 
-  async getChats() {
-    const response = await api.get('/chats')
-    return response.data
-  }
-}
+    return response.data;
+  },
+};
+export const userAPI = {
+  async register(email, password) {},
+};

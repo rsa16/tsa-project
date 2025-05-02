@@ -24,14 +24,14 @@ import {
 export default function Chat() {
     const { chatId } = useParams()
     const { chats, sendMessage } = useStore()
-    const [chatInput, setChatInput] = useState("")
-    const [sending, setSending] = useState(false)
-    const chat = chats.find((c) => c.id === parseInt(chatId))
+    const [chatInput, setChatInput] = useState('');
+    const [sending, setSending] = useState(false);
+    const chat = chats.find((c) => c.id === chatId);
     const navigate = useNavigate()
 
     const handleChatSubmit = async (e) => {
         e.preventDefault()
-        if (chatInput.trim() === "" || sending) return
+        if (chatInput.trim() === '' || sending) return
 
         try {
             setSending(true)
@@ -81,7 +81,7 @@ export default function Chat() {
                         <BreadcrumbSeparator className="hidden md:block" />
                         <BreadcrumbItem>
                             <BreadcrumbPage>{chats[chats.length - 1]?.title}</BreadcrumbPage>
-                        </BreadcrumbItem>
+                        </BreadcrumbItem>  
                     </BreadcrumbList>
                 </Breadcrumb>
                 <Button className="ml-auto" asChild>
@@ -89,21 +89,21 @@ export default function Chat() {
                 </Button>
             </header>
             <div className="flex-1 overflow-y-auto rounded-md border border-muted p-4">
-                {chat.messages.length === 0 ? (
+            {chat?.messages?.length === 0 ? (
                     <p className="text-muted-foreground text-center">
                         No messages yet. Start the conversation!
                     </p>
                 ) : (
-                    chat.messages.map((message) => (
+                    chat?.messages?.map((message, index) => (
                         <div
-                            key={message.timestamp}
+                            key={index}
                             className={`mb-4 flex ${message.role === "user" ? "justify-end" : "justify-start"
                                 }`}
                         >
                             <div
                                 className={`rounded-lg px-4 py-2 ${message.role === "user"
-                                    ? "bg-primary text-primary-foreground"
-                                    : "bg-muted text-muted-foreground"
+                                    ? "bg-primary text-primary-foreground "
+                                    : "bg-muted text-muted-foreground" 
                                     }`}
                             >
                                 {message.content}

@@ -36,7 +36,7 @@ export function AppSidebar({ ...props }) {
       icon: SquareTerminal,
       items: visibleChats.map((chat) => ({
         title: chat.title,
-        url: `#chat-${chat.id}`, // Placeholder URL for now
+        url: `/chats/${chat.id}`,
         icon: SquareTerminal,
       })),
     },

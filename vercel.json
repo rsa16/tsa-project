@@ -1,0 +1,22 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/server"
+    },
+    {
+        "source": "/(.*)",
+        "destination": "/index.html"
+    }
+  ],
+  "functions": {
+    "api/server": {
+      "runtime": "python3.11",
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
+}

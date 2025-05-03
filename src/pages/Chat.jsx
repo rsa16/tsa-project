@@ -35,7 +35,7 @@ export default function Chat() {
 
         try {
             setSending(true)
-            await sendMessage(parseInt(chatId), chatInput)
+            await sendMessage(chatId, chatInput)
             setChatInput("")
         } catch (err) {
             console.error("Failed to send message:", err)

@@ -1,10 +1,11 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from pydantic import BaseModel, ConfigDict
 import firebase_admin
 from firebase_admin import credentials, auth, firestore, exceptions
 from typing import List, Optional
 from datetime import datetime
 from env_chatbot import get_enhanced_response, Session
+
 
 cred = credentials.Certificate("./firebase_credentials.json")
 firebase_admin.initialize_app(cred)
@@ -116,3 +117,6 @@ async def send_message(chat_id: str, message: MessageCreate):
         raise HTTPException(status_code=500, detail=f"Firebase error: {e}")
     except Exception as e:
        raise HTTPException(status_code=500, detail=str(e))
+    
+async def handler(request: Request):
+    return await app(request.scope, request.receive, request.send)

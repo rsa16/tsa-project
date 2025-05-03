@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, Component } from "react"
 import { chatAPI } from "@/lib/api"
+import { useAuth } from "@/context/auth-context"
 
 const StoreContext = createContext()
 
@@ -30,7 +31,8 @@ class ErrorBoundary extends Component {
   }
 }
 
-export const StoreProvider = ({ children, userId }) => {
+export const StoreProvider = ({ children }) => {
+  const { user } = useAuth()
   const [chats, setChats] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -42,7 +44,7 @@ export const StoreProvider = ({ children, userId }) => {
   const fetchChats = async () => {
     try {
       setLoading(true)
-      const data = await chatAPI.getChats(userId)
+      const data = await chatAPI.getChats(user.id)
       setChats(sortChats(data))
     } catch (err) {
       setError(err.message)
@@ -52,11 +54,8 @@ export const StoreProvider = ({ children, userId }) => {
   }
 
   const sendMessage = async (chatId, message) => {
-    console.log(message)
     try {
-
-      console.log(chatId, message, "helllo")
-      const response = await chatAPI.sendMessage(chatId, message, userId)
+      const response = await chatAPI.sendMessage(chatId, message, user.id)
       setChats(prevChats =>
         sortChats(
           prevChats.map(chat =>
@@ -77,7 +76,7 @@ export const StoreProvider = ({ children, userId }) => {
 
   const createChat = async (title) => {
     try {
-      const newChat = await chatAPI.createChat(title, userId)
+      const newChat = await chatAPI.createChat(title, user.id)
       setChats(prevChats => sortChats([{
         id: newChat.chat_id,
         title: title,
@@ -92,8 +91,10 @@ export const StoreProvider = ({ children, userId }) => {
   };
 
   useEffect(() => {
-    fetchChats()
-  }, [userId])
+    if (user?.id) {
+      fetchChats()
+    }
+  }, [user])
 
   return (
     <StoreContext.Provider value={{

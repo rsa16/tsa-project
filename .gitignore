@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-server/firebase_credentials.json
+api/firebase_credentials.json
 *.pyc
 
 .venv

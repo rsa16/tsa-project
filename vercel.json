@@ -14,7 +14,7 @@
   ],
   "functions": {
     "api/server": {
-      "runtime": "python@3.11",
+      "runtime": "@vercel/python",
       "memory": 1024,
       "maxDuration": 10
     }

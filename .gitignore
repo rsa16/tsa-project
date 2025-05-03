@@ -27,3 +27,4 @@ server/firebase_credentials.json
 *.pyc
 
 .venv
+.env

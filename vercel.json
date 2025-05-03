@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/server"
+      "destination": "/api"
     },
     {
         "source": "/(.*)",
@@ -13,7 +13,7 @@
     }
   ],
   "functions": {
-    "api/server": {
+    "api": {
       "runtime": "@vercel/python@4.3.0",
       "memory": 1024,
       "maxDuration": 10

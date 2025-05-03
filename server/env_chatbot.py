@@ -5,8 +5,7 @@ import logging
 import sys
 from datetime import datetime
 import re
-
-from openai import OpenAI
+import google.generativeai as genai
 
 # logging
 logging.basicConfig(
@@ -17,14 +16,14 @@ logging.basicConfig(
 logger = logging.getLogger("eco_assistant")
 
 # env variables
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    logger.warning("No API key found. Please set OPENAI_API_KEY environment variable.")
-    OPENAI_API_KEY = "your-api-key-here"
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+if not GOOGLE_API_KEY:
+    logger.warning("No API key found. Please set GOOGLE_API_KEY environment variable.")
+    GOOGLE_API_KEY = "your-api-key-here"
 
-
-client = OpenAI(api_key=OPENAI_API_KEY)
-
+# Configure Gemini
+genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel('gemini-2.5-flash-preview-04-17')
 
 SUSTAINABILITY_DATABASE = {
     "agriculture": {
@@ -243,30 +242,28 @@ def format_context_for_ai(analysis: Dict, knowledge: List[Dict], session: Sessio
 
 def get_enhanced_response(user_input: str, session: Session) -> str:
     """
-    Generate a comprehensive, helpful response using the OpenAI API.
+    Generate a comprehensive, helpful response using the Gemini Pro API.
     """
     analysis = analyze_user_input(user_input, session)
     knowledge = get_relevant_knowledge(analysis)
     context = format_context_for_ai(analysis, knowledge, session)
     
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": f"Context information:\n{context}\n\nUser message: {user_input}"}
-            ],
-            temperature=0.7,
-            max_tokens=1024
-        )
+        # Create chat session with system prompt
+        chat = model.start_chat(history=[])
+        system_message = SYSTEM_PROMPT
         
-        ai_response = response.choices[0].message.content.strip()
+        # Send context and user input
+        prompt = f"Context information:\n{context}\n\nUser message: {user_input}"
+        response = chat.send_message(system_message + "\n\n" + prompt)
         
+        ai_response = response.text.strip()
         
+        # Add follow-up prompt if response is too short
         if len(ai_response) < 50 and not user_input.endswith("?"):
             ai_response += " Would you like more detailed information on this topic or suggestions for implementation?"
         
-        
+        # Track recommendations
         for solution in knowledge:
             solution_name = solution["solution"].replace("_", " ")
             if solution_name in ai_response.lower():

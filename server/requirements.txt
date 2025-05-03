@@ -10,6 +10,7 @@ cryptography==44.0.3
 distro==1.9.0
 fastapi==0.115.12
 firebase-admin==6.8.0
+google-ai-generativelanguage==0.6.15
 google-api-core==2.25.0rc0
 google-api-python-client==2.169.0
 google-auth==2.39.0
@@ -18,6 +19,7 @@ google-cloud-core==2.4.3
 google-cloud-firestore==2.20.2
 google-cloud-storage==3.1.0
 google-crc32c==1.7.1
+google-generativeai==0.8.5
 google-resumable-media==2.7.2
 googleapis-common-protos==1.70.0
 grpcio==1.71.0

@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
-import { BrowserRouter as Router, Routes, Route, useSearchParams } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, useSearchParams, useNavigate, Outlet } from "react-router-dom"
 import { AnimatePresence } from "framer-motion"
 import Home from "@/pages/Home"
 import Chats from "@/pages/Chats"
 import Chat from "@/pages/Chat"
 import Cards from "@/pages/Cards"
 import NewChat from "@/pages/NewChat"
+import Login from "@/pages/Login"
+import Register from "@/pages/Register"
 import { StoreProvider } from "@/store"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { UserProvider, useUser } from "./context/user-context"
+import { AuthProvider, useAuth } from "@/context/auth-context"
 
 const RouterWrapper = () => {
   const [searchParams] = useSearchParams();
@@ -25,17 +28,17 @@ const RouterWrapper = () => {
   }, [searchParams, setUserId]);
 
   return (
-    <SidebarInset>
-      <AnimatePresence mode="wait">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/chats" element={<Chats />} />
-          <Route path="/chats/new" element={<NewChat />} />
-          <Route path="/chats/:chatId" element={<Chat />} />
-          <Route path="/cards" element={<Cards />} />
-        </Routes>
-      </AnimatePresence>
-    </SidebarInset>
+    <AnimatePresence mode="wait">
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/chats" element={<Chats />} />
+        <Route path="/chats/new" element={<NewChat />} />
+        <Route path="/chats/:chatId" element={<Chat />} />
+        <Route path="/cards" element={<Cards />} />
+      </Routes>
+    </AnimatePresence>
   );
 };
 
@@ -44,18 +47,55 @@ const StoreWrapper = ({ children }) => {
   return <StoreProvider userId={userId}>{children}</StoreProvider>;
 };
 
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/login');
+    }
+  }, [user, loading, navigate]);
+
+  return user ? children : null;
+};
+
+const AppLayout = () => {
+  const { user } = useAuth();
+
+  return (
+    <SidebarProvider>
+      {user && <AppSidebar />}
+      <SidebarInset>
+        <AnimatePresence mode="wait">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
+              <Route path="/" element={<Home />} />
+              <Route path="/chats" element={<Chats />} />
+              <Route path="/chats/new" element={<NewChat />} />
+              <Route path="/chats/:chatId" element={<Chat />} />
+              <Route path="/cards" element={<Cards />} />
+            </Route>
+          </Routes>
+        </AnimatePresence>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+};
+
 function App() {
   return (
-    <UserProvider>
-      <Router>
-        <StoreWrapper>
-          <SidebarProvider>
-            <AppSidebar />
-            <RouterWrapper />
-          </SidebarProvider>
-        </StoreWrapper>
-      </Router>
-    </UserProvider>
+    <AuthProvider>
+      <UserProvider>
+        <Router>
+          <StoreWrapper>
+            <AppLayout />
+          </StoreWrapper>
+        </Router>
+      </UserProvider>
+    </AuthProvider>
   );
 }
 

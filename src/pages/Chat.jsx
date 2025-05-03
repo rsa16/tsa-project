@@ -20,6 +20,8 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
+import ReactMarkdown from 'react-markdown'
+import { TypingIndicator } from "@/components/typing-indicator"
 
 export default function Chat() {
     const { chatId } = useParams()
@@ -94,22 +96,47 @@ export default function Chat() {
                         No messages yet. Start the conversation!
                     </p>
                 ) : (
-                    chat?.messages?.map((message, index) => (
-                        <div
-                            key={index}
-                            className={`mb-4 flex ${message.role === "user" ? "justify-end" : "justify-start"
-                                }`}
-                        >
+                    <>
+                        {chat?.messages?.map((message, index) => (
                             <div
-                                className={`rounded-lg px-4 py-2 ${message.role === "user"
-                                    ? "bg-primary text-primary-foreground "
-                                    : "bg-muted text-muted-foreground" 
+                                key={index}
+                                className={`mb-4 flex ${message.role === "user" ? "justify-end" : "justify-start"
                                     }`}
                             >
-                                {message.content}
+                                <div
+                                    className={`rounded-lg px-4 py-2 max-w-2/3 ${message.role === "user"
+                                        ? "bg-primary text-primary-foreground "
+                                        : "bg-muted text-muted-foreground prose prose-sm dark:prose-invert" 
+                                        }`}
+                                >
+                                    {message.role === "user" ? (
+                                        message.content
+                                    ) : (
+                                        <ReactMarkdown
+                                            components={{
+                                                p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                                                ul: ({ children }) => <ul className="mb-2 list-disc pl-4">{children}</ul>,
+                                                ol: ({ children }) => <ol className="mb-2 list-decimal pl-4">{children}</ol>,
+                                                li: ({ children }) => <li className="mb-1">{children}</li>,
+                                                a: ({ children, href }) => (
+                                                    <a href={href} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                                                        {children}
+                                                    </a>
+                                                ),
+                                            }}
+                                        >
+                                            {message.content}
+                                        </ReactMarkdown>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        ))}
+                        {sending && (
+                            <div className="mb-4 flex justify-start">
+                                <TypingIndicator />
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
             <form

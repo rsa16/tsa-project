@@ -26,35 +26,42 @@ export default function Chats() {
                     </BreadcrumbItem>
                 </Breadcrumb>
             </header>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {chats.map((chat) => (
-                    <Card
-                        key={chat.id}
-                        className="hover:shadow-lg transition-shadow"
-                    >
-                        <CardHeader>
-                            <CardTitle>{chat.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-muted-foreground">
-                                {chat.messages.length > 0
-                                    ? `${chat.messages[chat.messages.length - 1].role}: ${
-                                          chat.messages[chat.messages.length - 1].content
-                                      }`
-                                    : "No messages yet"}
-                            </p>
-                            <Button
-                                asChild
-                                variant="outline"
-                                size="sm"
-                                className="mt-4"
-                            >
-                                <Link to={`/chats/${chat.id}`}>Open Chat</Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+            {chats.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-[calc(100vh-12rem)] text-center">
+                    <h2 className="text-2xl font-semibold text-muted-foreground mb-2">No chats yet</h2>
+                    <p className="text-sm text-muted-foreground">Click the button on the bottom right to create one</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {chats.map((chat) => (
+                        <Card
+                            key={chat.id}
+                            className="hover:shadow-lg transition-shadow"
+                        >
+                            <CardHeader>
+                                <CardTitle>{chat.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm text-muted-foreground truncate">
+                                    {chat.messages.length > 0
+                                        ? `${chat.messages[chat.messages.length - 1].role}: ${
+                                            chat.messages[chat.messages.length - 1].content
+                                        }`
+                                        : "No messages yet"}
+                                </p>
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="mt-4"
+                                >
+                                    <Link to={`/chats/${chat.id}`}>Open Chat</Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
             <Button
                 asChild
                 className="fixed bottom-6 right-6 rounded-full h-14 w-14 bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 flex items-center justify-center"

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/",
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -9,7 +9,7 @@ const api = axios.create({
 
 export const chatAPI = {
   async sendMessage(chatId, message, userId) {
-    const response = await api.post(`/chats/${chatId}`, {
+    const response = await api.post(`/chats/${chatId}/messages`, {
       user_id: userId,
       message: message,
     });

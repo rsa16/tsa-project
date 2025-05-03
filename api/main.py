@@ -4,8 +4,7 @@ import firebase_admin
 from firebase_admin import credentials, auth, firestore, exceptions
 from typing import List, Optional
 from datetime import datetime
-from env_chatbot import get_enhanced_response, Session
-
+from .env_chatbot import get_enhanced_response, Session
 
 cred = credentials.Certificate("./firebase_credentials.json")
 firebase_admin.initialize_app(cred)

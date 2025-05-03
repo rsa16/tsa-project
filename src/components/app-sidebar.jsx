@@ -21,10 +21,12 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useStore } from "@/store"
+import { useNavigate } from "react-router-dom"
 
 export function AppSidebar({ ...props }) {
   const { chats } = useStore()
   const [showAllChats, setShowAllChats] = React.useState(false)
+  const navigate = useNavigate();
 
   // Limit the number of chats shown in the sidebar
   const visibleChats = showAllChats ? chats : chats.slice(0, 5)
@@ -75,7 +77,7 @@ export function AppSidebar({ ...props }) {
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div onClick={() => navigate("/")} className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">TSA Project</span>
                   <span className="truncate text-xs">For the environment</span>
                 </div>

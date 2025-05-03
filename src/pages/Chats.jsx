@@ -11,13 +11,19 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { motion } from "framer-motion"
 
 export default function Chats() {
     const { chats } = useStore();
     const navigate = useNavigate()
 
     return (
-        <div className="p-6">
+        <motion.div className="p-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+        >
             <header className="ml-3 mb-8 flex items-center">
                 <SidebarTrigger className="-ml-3 mr-3" />
                 <Breadcrumb>
@@ -44,8 +50,7 @@ export default function Chats() {
                             <CardContent>
                                 <p className="text-sm text-muted-foreground truncate">
                                     {chat.messages.length > 0
-                                        ? `${chat.messages[chat.messages.length - 1].role}: ${
-                                            chat.messages[chat.messages.length - 1].content
+                                        ? `${chat.messages[chat.messages.length - 1].role}: ${chat.messages[chat.messages.length - 1].content
                                         }`
                                         : "No messages yet"}
                                 </p>
@@ -74,6 +79,6 @@ export default function Chats() {
                     </svg>
                 </Link>
             </Button>
-        </div>
+        </motion.div>
     );
 }

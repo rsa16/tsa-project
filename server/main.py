@@ -4,15 +4,13 @@ import firebase_admin
 from firebase_admin import credentials, auth, firestore, exceptions
 from typing import List, Optional
 from datetime import datetime
-from .env_chatbot import get_enhanced_response, Session
+from env_chatbot import get_enhanced_response, Session
 
 cred = credentials.Certificate("./firebase_credentials.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 app = FastAPI()
-
-
 
 class UserAuth(BaseModel):
     email: str
@@ -38,6 +36,7 @@ class Chat(BaseModel):
     created_at: float = datetime.now().timestamp()
 
 class ChatCreate(BaseModel):
+    user_id: str
     title: str
 
 class MessageCreate(BaseModel):
@@ -57,14 +56,14 @@ def login_user(user: UserAuth):
 
 
 @app.post("/chats")
-async def create_chat(user_id: str, chat_create: ChatCreate):
+async def create_chat(chat_create: ChatCreate):
     try:
-        new_chat = Chat(user_id=user_id, title=chat_create.title, messages=[])
+        new_chat = Chat(user_id=chat_create.user_id, title=chat_create.title, messages=[])
         doc_ref = db.collection("chats").document()
         new_chat.id = doc_ref.id
         doc_ref.set(new_chat.model_dump())
 
-        return {"chat_id": new_chat.id, "message": "Chat created successfully"}
+        return {"chat_id": new_chat.id, "title": new_chat.title}
     except exceptions.FirebaseError as e:
         raise HTTPException(status_code=500, detail=f"Firebase error: {e}")
     except Exception as e:
@@ -77,7 +76,7 @@ def get_chats(user_id: str):
         chats_docs = db.collection("chats").where("user_id", "==", user_id).stream()
         
         chat_list = []
-        for chat_doc in chats:
+        for chat_doc in chats_docs:
             chat_data = chat_doc.to_dict()
             chat_id = chat_doc.id
             chat_list.append({**chat_data, "id": chat_id})
